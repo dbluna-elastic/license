@@ -1,0 +1,5 @@
+// Claim: category mix of every collected field instance (donut source).
+FROM tdlr-forms
+| MV_EXPAND field_category_instances
+| STATS instances = COUNT() BY field_category_instances
+| SORT instances DESC

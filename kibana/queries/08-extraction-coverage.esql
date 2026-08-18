@@ -1,0 +1,4 @@
+// Claim: be transparent about extraction quality (coverage footer).
+FROM tdlr-forms
+| STATS forms = COUNT(*), avg_confidence = AVG(extraction_confidence) BY extraction_method
+| SORT forms DESC

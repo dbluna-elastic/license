@@ -1,0 +1,6 @@
+// Claim: redundancy is measurable at the field level across the corpus.
+FROM tdlr-forms
+| MV_EXPAND standard_fields
+| STATS form_count = COUNT_DISTINCT(form_id) BY standard_fields
+| SORT form_count DESC
+| LIMIT 25

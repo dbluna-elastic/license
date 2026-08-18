@@ -1,0 +1,60 @@
+{
+  "index_patterns": ["tdlr-forms"],
+  "priority": 500,
+  "template": {
+    "settings": {
+      "index.default_pipeline": "tdlr-forms-score",
+      "number_of_shards": 1,
+      "number_of_replicas": 1
+    },
+    "mappings": {
+      "dynamic": false,
+      "_source": { "enabled": true },
+      "properties": {
+        "form_id": { "type": "keyword" },
+        "form_title": {
+          "type": "text",
+          "fields": { "keyword": { "type": "keyword", "ignore_above": 256 } }
+        },
+        "program_sector": { "type": "keyword" },
+        "license_program": { "type": "keyword" },
+        "pdf_url": { "type": "keyword", "index": false },
+        "revision_date": { "type": "date" },
+        "content_hash": { "type": "keyword" },
+        "page_count": { "type": "integer" },
+        "total_field_count": { "type": "integer" },
+        "standard_fields": { "type": "keyword" },
+        "sensitive_pii_fields": { "type": "keyword" },
+        "unique_program_fields": { "type": "keyword" },
+        "standard_field_count": { "type": "integer" },
+        "unique_field_count": { "type": "integer" },
+        "unique_field_ratio": { "type": "float" },
+        "reuse_tier_state_of_record": { "type": "keyword" },
+        "reuse_tier_citizen_known": { "type": "keyword" },
+        "sensitive_pii_count": { "type": "integer" },
+        "citizen_burden_score": { "type": "float" },
+        "field_category_instances": { "type": "keyword" },
+        "field_alias_pairs": { "type": "keyword" },
+        "field_aliases_observed": {
+          "type": "nested",
+          "properties": {
+            "raw": { "type": "keyword" },
+            "canonical": { "type": "keyword" }
+          }
+        },
+        "raw_unmatched_labels": {
+          "type": "text",
+          "fields": { "keyword": { "type": "keyword", "ignore_above": 1024 } }
+        },
+        "raw_unmatched_labels_semantic": {
+          "type": "semantic_text",
+          "inference_id": ".elser-2-elastic"
+        },
+        "extraction_method": { "type": "keyword" },
+        "extraction_confidence": { "type": "float" },
+        "is_new_or_revised": { "type": "boolean" },
+        "ingested_at": { "type": "date" }
+      }
+    }
+  }
+}

@@ -1,0 +1,12 @@
+Why this matters now (H1)
+
+TDLR is in the Sunset Advisory Commission review cycle, and Texas DIR is pushing
+statewide digital-government and shared-identity work (Texas.gov / TxT). The
+political question in the room is no longer "can we digitize another PDF" — it is
+whether a citizen still has to retype identity data the state already holds every
+time they touch a new license program. This demo measures that waste at the field
+level and watches the next published form so the finding does not go stale after
+Sunset testimony.
+
+Verify the current Sunset timeline and any DIR identity memo before quoting dates
+to TDLR — a stale citation costs more than no citation.

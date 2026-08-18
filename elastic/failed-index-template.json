@@ -1,0 +1,19 @@
+{
+  "index_patterns": ["tdlr-forms-failed"],
+  "priority": 500,
+  "template": {
+    "settings": {
+      "number_of_shards": 1,
+      "number_of_replicas": 1
+    },
+    "mappings": {
+      "dynamic": true,
+      "properties": {
+        "error.message": { "type": "text" },
+        "error.processor": { "type": "keyword" },
+        "form_id": { "type": "keyword" },
+        "ingested_at": { "type": "date" }
+      }
+    }
+  }
+}

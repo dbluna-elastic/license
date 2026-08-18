@@ -1,0 +1,8 @@
+// Claim: long standard segment, stub of actual program content.
+FROM tdlr-forms
+| SORT unique_field_ratio ASC, citizen_burden_score DESC
+| LIMIT 20
+| EVAL field_kind = ["Standard (reused)", "Unique (program)"]
+| MV_EXPAND field_kind
+| EVAL field_count = CASE(field_kind == "Standard (reused)", standard_field_count, unique_field_count)
+| KEEP form_id, form_title, field_kind, field_count, unique_field_ratio

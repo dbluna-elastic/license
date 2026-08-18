@@ -1,0 +1,6 @@
+// Claim: twelve ways to spell SSN — alias evidence for C2 / Agent Builder.
+FROM tdlr-forms
+| MV_EXPAND field_alias_pairs
+| DISSECT field_alias_pairs "%{canonical} :: %{raw}"
+| STATS variant_count = COUNT_DISTINCT(raw), forms = COUNT_DISTINCT(form_id) BY canonical
+| SORT variant_count DESC

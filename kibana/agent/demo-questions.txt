@@ -1,0 +1,24 @@
+Rehearse on this exact corpus. Each question maps to a tool.
+
+1. Which forms ask for Social Security numbers?
+   -> tdlr.get_forms_requesting_field field_name=ssn
+   Expected: ~139 forms. Lead with LIC041 if you want the "form 41" beat.
+
+2. How many different ways does TDLR spell Social Security Number?
+   -> tdlr.get_field_variants canonical_field=ssn
+   Expected: 5 variants (SSN, SS#, Social Security No., etc.)
+
+3. What's the single worst form for redundant data entry?
+   -> tdlr.get_lowest_value_forms sector=all
+   Expected: unique_field_ratio ~0.04 (ACR-007 / TOW-007 / ELE-002 family).
+   Open that form_id in the executive table and tell its story.
+
+4. If we prefilled name, address, and phone from the licensee record, how many
+   field entries would that eliminate?
+   -> tdlr.get_forms_requesting_field for legal_name, mailing_address, phone
+   Expected: all 180 forms ask for each. 180 × 3 = 540 redundant entries in this corpus.
+   Do not invent an annual submission volume — C3 is not loaded yet.
+
+5. Which program office should we fix first, and why?
+   -> tdlr.compare_sectors
+   Pick the sector with the highest avg_burden and cite the redundant_entries count.

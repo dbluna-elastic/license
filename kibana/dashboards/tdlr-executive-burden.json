@@ -1,0 +1,178 @@
+{
+  "title": "TDLR — Executive Burden Summary",
+  "description": "The number, and what to fix first. Screenshot dashboard for the program director.",
+  "time_range": { "from": "now-90d", "to": "now" },
+  "panels": [
+    {
+      "type": "vis",
+      "id": "metric-forms",
+      "grid": { "x": 0, "y": 0, "w": 12, "h": 5 },
+      "config": {
+        "title": "",
+        "type": "metric",
+        "data_source": {
+          "type": "esql",
+          "query": "FROM tdlr-forms | STATS `Forms in corpus` = COUNT(*)"
+        },
+        "metrics": [{ "type": "primary", "column": "Forms in corpus" }]
+      }
+    },
+    {
+      "type": "vis",
+      "id": "metric-redundant",
+      "grid": { "x": 12, "y": 0, "w": 12, "h": 5 },
+      "config": {
+        "title": "",
+        "type": "metric",
+        "data_source": {
+          "type": "esql",
+          "query": "FROM tdlr-forms | STATS `Redundant field entries` = SUM(standard_field_count)"
+        },
+        "metrics": [{ "type": "primary", "column": "Redundant field entries" }]
+      }
+    },
+    {
+      "type": "vis",
+      "id": "metric-ssn",
+      "grid": { "x": 24, "y": 0, "w": 12, "h": 5 },
+      "config": {
+        "title": "",
+        "type": "metric",
+        "data_source": {
+          "type": "esql",
+          "query": "FROM tdlr-forms | STATS `Forms asking for SSN` = COUNT(*) WHERE MV_CONTAINS(sensitive_pii_fields, \"ssn\")"
+        },
+        "metrics": [{ "type": "primary", "column": "Forms asking for SSN" }]
+      }
+    },
+    {
+      "type": "vis",
+      "id": "metric-trifecta",
+      "grid": { "x": 36, "y": 0, "w": 12, "h": 5 },
+      "config": {
+        "title": "",
+        "type": "metric",
+        "data_source": {
+          "type": "esql",
+          "query": "FROM tdlr-forms | STATS `SSN + DOB + DL trifecta` = COUNT(*) WHERE MV_CONTAINS(sensitive_pii_fields, \"ssn\") AND MV_CONTAINS(sensitive_pii_fields, \"dob\") AND MV_CONTAINS(sensitive_pii_fields, \"driver_license_number\")"
+        },
+        "metrics": [{ "type": "primary", "column": "SSN + DOB + DL trifecta" }]
+      }
+    },
+    {
+      "type": "vis",
+      "id": "heatmap-standard",
+      "grid": { "x": 0, "y": 5, "w": 32, "h": 14 },
+      "config": {
+        "title": "Standard fields requested across program sectors",
+        "type": "heatmap",
+        "data_source": {
+          "type": "esql",
+          "query": "FROM tdlr-forms | MV_EXPAND standard_fields | STATS form_count = COUNT_DISTINCT(form_id) BY standard_fields, program_sector"
+        },
+        "x": { "column": "program_sector" },
+        "y": { "column": "standard_fields" },
+        "metric": { "column": "form_count" }
+      }
+    },
+    {
+      "type": "vis",
+      "id": "donut-category",
+      "grid": { "x": 32, "y": 5, "w": 16, "h": 14 },
+      "config": {
+        "title": "Where the collected fields sit",
+        "type": "pie",
+        "data_source": {
+          "type": "esql",
+          "query": "FROM tdlr-forms | MV_EXPAND field_category_instances | STATS instances = COUNT() BY field_category_instances"
+        },
+        "metrics": [{ "column": "instances" }],
+        "group_by": [{ "column": "field_category_instances" }]
+      }
+    },
+    {
+      "type": "vis",
+      "id": "bar-low-unique",
+      "grid": { "x": 0, "y": 19, "w": 24, "h": 12 },
+      "config": {
+        "title": "Least unique forms — mostly re-collection",
+        "type": "xy",
+        "layers": [
+          {
+            "type": "bar_horizontal_stacked",
+            "data_source": {
+              "type": "esql",
+              "query": "FROM tdlr-forms | SORT unique_field_ratio ASC, citizen_burden_score DESC | LIMIT 20 | EVAL field_kind = [\"Standard (reused)\", \"Unique (program)\"] | MV_EXPAND field_kind | EVAL field_count = CASE(field_kind == \"Standard (reused)\", standard_field_count, unique_field_count)"
+            },
+            "x": { "column": "form_id" },
+            "y": [{ "column": "field_count" }],
+            "breakdown_by": { "column": "field_kind" }
+          }
+        ]
+      }
+    },
+    {
+      "type": "vis",
+      "id": "bar-sector-burden",
+      "grid": { "x": 24, "y": 19, "w": 24, "h": 12 },
+      "config": {
+        "title": "Which program office has the worst burden",
+        "type": "xy",
+        "layers": [
+          {
+            "type": "bar_horizontal",
+            "data_source": {
+              "type": "esql",
+              "query": "FROM tdlr-forms | STATS `Avg burden` = AVG(citizen_burden_score) BY program_sector | SORT `Avg burden` DESC"
+            },
+            "x": { "column": "program_sector" },
+            "y": [{ "column": "Avg burden" }]
+          }
+        ]
+      }
+    },
+    {
+      "type": "vis",
+      "id": "table-top10",
+      "grid": { "x": 0, "y": 31, "w": 32, "h": 10 },
+      "config": {
+        "title": "Top 10 forms to fix first",
+        "type": "data_table",
+        "data_source": {
+          "type": "esql",
+          "query": "FROM tdlr-forms | SORT citizen_burden_score DESC | LIMIT 10 | KEEP form_id, form_title, program_sector, citizen_burden_score, unique_field_ratio, sensitive_pii_count"
+        },
+        "rows": [
+          { "column": "form_id" },
+          { "column": "form_title" },
+          { "column": "program_sector" }
+        ],
+        "metrics": [
+          { "column": "citizen_burden_score" },
+          { "column": "unique_field_ratio" },
+          { "column": "sensitive_pii_count" }
+        ]
+      }
+    },
+    {
+      "type": "vis",
+      "id": "extraction-coverage",
+      "grid": { "x": 32, "y": 31, "w": 16, "h": 10 },
+      "config": {
+        "title": "Extraction coverage (error bars)",
+        "type": "xy",
+        "layers": [
+          {
+            "type": "bar",
+            "data_source": {
+              "type": "esql",
+              "query": "FROM tdlr-forms | STATS forms = COUNT() BY extraction_method | SORT forms DESC"
+            },
+            "x": { "column": "extraction_method" },
+            "y": [{ "column": "forms" }]
+          }
+        ]
+      }
+    }
+  ]
+}

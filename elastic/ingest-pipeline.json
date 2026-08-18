@@ -1,0 +1,68 @@
+{
+  "description": "Score TDLR form burden: counts, unique ratio, citizen burden, ingested_at",
+  "processors": [
+    {
+      "script": {
+        "lang": "painless",
+        "source": "ctx.standard_field_count = ctx.standard_fields == null ? 0 : ctx.standard_fields.size();"
+      }
+    },
+    {
+      "script": {
+        "lang": "painless",
+        "source": "ctx.unique_field_count = ctx.unique_program_fields == null ? 0 : ctx.unique_program_fields.size();"
+      }
+    },
+    {
+      "script": {
+        "lang": "painless",
+        "source": "ctx.total_field_count = (ctx.standard_field_count == null ? 0 : ctx.standard_field_count) + (ctx.unique_field_count == null ? 0 : ctx.unique_field_count);"
+      }
+    },
+    {
+      "script": {
+        "lang": "painless",
+        "source": "if (ctx.total_field_count == null || ctx.total_field_count == 0) { ctx.unique_field_ratio = 0.0; } else { ctx.unique_field_ratio = (double) ctx.unique_field_count / (double) ctx.total_field_count; }"
+      }
+    },
+    {
+      "script": {
+        "lang": "painless",
+        "source": "ctx.sensitive_pii_count = ctx.sensitive_pii_fields == null ? 0 : ctx.sensitive_pii_fields.size();"
+      }
+    },
+    {
+      "script": {
+        "lang": "painless",
+        "source": "int state = ctx.reuse_tier_state_of_record == null ? 0 : ctx.reuse_tier_state_of_record.size(); int known = ctx.reuse_tier_citizen_known == null ? 0 : ctx.reuse_tier_citizen_known.size(); int pii = ctx.sensitive_pii_count == null ? 0 : ctx.sensitive_pii_count; ctx.citizen_burden_score = state * 3.0 + known * 1.5 + pii * 2.0;"
+      }
+    },
+    {
+      "set": {
+        "field": "ingested_at",
+        "value": "{{_ingest.timestamp}}",
+        "override": false
+      }
+    }
+  ],
+  "on_failure": [
+    {
+      "set": {
+        "field": "_index",
+        "value": "tdlr-forms-failed"
+      }
+    },
+    {
+      "set": {
+        "field": "error.message",
+        "value": "{{_ingest.on_failure_message}}"
+      }
+    },
+    {
+      "set": {
+        "field": "error.processor",
+        "value": "{{_ingest.on_failure_processor_type}}"
+      }
+    }
+  ]
+}

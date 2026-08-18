@@ -1,0 +1,5 @@
+// Claim: TDLR already stores these, yet forms keep asking.
+FROM tdlr-forms
+| MV_EXPAND reuse_tier_state_of_record
+| STATS form_count = COUNT_DISTINCT(form_id) BY reuse_tier_state_of_record
+| SORT form_count DESC

@@ -1,0 +1,5 @@
+// Claim: here is what to fix first — ranked by citizen_burden_score.
+FROM tdlr-forms
+| SORT citizen_burden_score DESC
+| LIMIT 10
+| KEEP form_id, form_title, program_sector, citizen_burden_score, unique_field_ratio, sensitive_pii_count, pdf_url

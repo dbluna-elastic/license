@@ -1,0 +1,113 @@
+{
+  "title": "TDLR — Privacy Exposure",
+  "description": "The redundancy is concentrated in exactly the data you least want duplicated.",
+  "time_range": { "from": "now-90d", "to": "now" },
+  "panels": [
+    {
+      "type": "vis",
+      "id": "metric-ssn",
+      "grid": { "x": 0, "y": 0, "w": 12, "h": 5 },
+      "config": {
+        "title": "",
+        "type": "metric",
+        "data_source": {
+          "type": "esql",
+          "query": "FROM tdlr-forms | STATS `Forms requesting SSN` = COUNT(*) WHERE MV_CONTAINS(sensitive_pii_fields, \"ssn\")"
+        },
+        "metrics": [{ "type": "primary", "column": "Forms requesting SSN" }]
+      }
+    },
+    {
+      "type": "vis",
+      "id": "metric-trifecta",
+      "grid": { "x": 12, "y": 0, "w": 12, "h": 5 },
+      "config": {
+        "title": "",
+        "type": "metric",
+        "data_source": {
+          "type": "esql",
+          "query": "FROM tdlr-forms | STATS `Identity-theft trifecta` = COUNT(*) WHERE MV_CONTAINS(sensitive_pii_fields, \"ssn\") AND MV_CONTAINS(sensitive_pii_fields, \"dob\") AND MV_CONTAINS(sensitive_pii_fields, \"driver_license_number\")"
+        },
+        "metrics": [{ "type": "primary", "column": "Identity-theft trifecta" }]
+      }
+    },
+    {
+      "type": "vis",
+      "id": "metric-criminal",
+      "grid": { "x": 24, "y": 0, "w": 12, "h": 5 },
+      "config": {
+        "title": "",
+        "type": "metric",
+        "data_source": {
+          "type": "esql",
+          "query": "FROM tdlr-forms | STATS `Forms requesting criminal history` = COUNT(*) WHERE MV_CONTAINS(sensitive_pii_fields, \"criminal_history\")"
+        },
+        "metrics": [{ "type": "primary", "column": "Forms requesting criminal history" }]
+      }
+    },
+    {
+      "type": "vis",
+      "id": "metric-state-record",
+      "grid": { "x": 36, "y": 0, "w": 12, "h": 5 },
+      "config": {
+        "title": "",
+        "type": "metric",
+        "data_source": {
+          "type": "esql",
+          "query": "FROM tdlr-forms | MV_EXPAND reuse_tier_state_of_record | STATS `State-of-record field entries` = COUNT()"
+        },
+        "metrics": [{ "type": "primary", "column": "State-of-record field entries" }]
+      }
+    },
+    {
+      "type": "vis",
+      "id": "donut-categories",
+      "grid": { "x": 0, "y": 5, "w": 20, "h": 12 },
+      "config": {
+        "title": "Field instances by sensitivity category",
+        "type": "pie",
+        "data_source": {
+          "type": "esql",
+          "query": "FROM tdlr-forms | MV_EXPAND field_category_instances | STATS instances = COUNT() BY field_category_instances"
+        },
+        "metrics": [{ "column": "instances" }],
+        "group_by": [{ "column": "field_category_instances" }]
+      }
+    },
+    {
+      "type": "vis",
+      "id": "bar-state-of-record",
+      "grid": { "x": 20, "y": 5, "w": 28, "h": 12 },
+      "config": {
+        "title": "Forms requesting data TDLR already holds",
+        "type": "xy",
+        "layers": [
+          {
+            "type": "bar_horizontal",
+            "data_source": {
+              "type": "esql",
+              "query": "FROM tdlr-forms | MV_EXPAND reuse_tier_state_of_record | STATS form_count = COUNT_DISTINCT(form_id) BY reuse_tier_state_of_record | SORT form_count DESC"
+            },
+            "x": { "column": "reuse_tier_state_of_record" },
+            "y": [{ "column": "form_count" }]
+          }
+        ]
+      }
+    },
+    {
+      "type": "vis",
+      "id": "table-aliases",
+      "grid": { "x": 0, "y": 17, "w": 48, "h": 10 },
+      "config": {
+        "title": "How many ways TDLR spells each canonical field",
+        "type": "data_table",
+        "data_source": {
+          "type": "esql",
+          "query": "FROM tdlr-forms | MV_EXPAND field_alias_pairs | DISSECT field_alias_pairs \"%{canonical} :: %{raw}\" | STATS variant_count = COUNT_DISTINCT(raw), forms = COUNT_DISTINCT(form_id) BY canonical | SORT variant_count DESC"
+        },
+        "rows": [{ "column": "canonical" }],
+        "metrics": [{ "column": "variant_count" }, { "column": "forms" }]
+      }
+    }
+  ]
+}

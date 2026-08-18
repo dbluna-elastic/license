@@ -1,0 +1,12 @@
+// Claim: the redundancy is concentrated in sensitive data.
+FROM tdlr-forms
+| STATS
+    total_forms = COUNT(*),
+    ssn_forms = COUNT(*) WHERE MV_CONTAINS(sensitive_pii_fields, "ssn"),
+    dob_forms = COUNT(*) WHERE MV_CONTAINS(sensitive_pii_fields, "dob"),
+    dl_forms = COUNT(*) WHERE MV_CONTAINS(sensitive_pii_fields, "driver_license_number"),
+    criminal_forms = COUNT(*) WHERE MV_CONTAINS(sensitive_pii_fields, "criminal_history"),
+    trifecta_forms = COUNT(*) WHERE MV_CONTAINS(sensitive_pii_fields, "ssn") AND MV_CONTAINS(sensitive_pii_fields, "dob") AND MV_CONTAINS(sensitive_pii_fields, "driver_license_number")
+| EVAL
+    ssn_pct = ROUND(ssn_forms * 100.0 / total_forms, 1),
+    trifecta_pct = ROUND(trifecta_forms * 100.0 / total_forms, 1)

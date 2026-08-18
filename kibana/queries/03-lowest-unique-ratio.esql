@@ -1,0 +1,5 @@
+// Claim: some forms are almost entirely re-collection.
+FROM tdlr-forms
+| SORT unique_field_ratio ASC, citizen_burden_score DESC
+| LIMIT 20
+| KEEP form_id, form_title, program_sector, unique_field_ratio, standard_field_count, unique_field_count, citizen_burden_score

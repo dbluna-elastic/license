@@ -1,0 +1,160 @@
+{
+  "description": "Reusable TDLR field dictionary. Anything unmatched is unique by subtraction.",
+  "fields": [
+    {
+      "name": "ssn",
+      "category": "sensitive_pii",
+      "reuse_tier": "state_of_record",
+      "variants": [
+        "Social Security Number",
+        "SSN",
+        "SS#",
+        "Social Security No.",
+        "Social Security Number (SSN)",
+        "Applicant SSN"
+      ]
+    },
+    {
+      "name": "dob",
+      "category": "sensitive_pii",
+      "reuse_tier": "state_of_record",
+      "variants": ["Date of Birth", "DOB", "Birth Date", "Applicant Date of Birth"]
+    },
+    {
+      "name": "driver_license_number",
+      "category": "sensitive_pii",
+      "reuse_tier": "state_of_record",
+      "variants": [
+        "Driver License Number",
+        "DL#",
+        "Texas Driver License",
+        "State-Issued ID Number"
+      ]
+    },
+    {
+      "name": "criminal_history",
+      "category": "sensitive_pii",
+      "reuse_tier": "state_of_record",
+      "variants": [
+        "Criminal History",
+        "Have you ever been convicted",
+        "Felony Conviction",
+        "Criminal Background"
+      ]
+    },
+    {
+      "name": "tax_id",
+      "category": "sensitive_pii",
+      "reuse_tier": "state_of_record",
+      "variants": ["Federal Tax ID", "TIN", "Taxpayer ID"]
+    },
+    {
+      "name": "legal_name",
+      "category": "contact",
+      "reuse_tier": "state_of_record",
+      "variants": ["Legal Name", "Full Legal Name", "Applicant Name", "Name of Applicant"]
+    },
+    {
+      "name": "first_name",
+      "category": "contact",
+      "reuse_tier": "citizen_known",
+      "variants": ["First Name", "Given Name"]
+    },
+    {
+      "name": "last_name",
+      "category": "contact",
+      "reuse_tier": "citizen_known",
+      "variants": ["Last Name", "Surname", "Family Name"]
+    },
+    {
+      "name": "mailing_address",
+      "category": "contact",
+      "reuse_tier": "state_of_record",
+      "variants": ["Mailing Address", "Address", "Street Address", "Mailing Street"]
+    },
+    {
+      "name": "physical_address",
+      "category": "contact",
+      "reuse_tier": "citizen_known",
+      "variants": ["Physical Address", "Business Location", "Premises Address"]
+    },
+    {
+      "name": "city",
+      "category": "contact",
+      "reuse_tier": "citizen_known",
+      "variants": ["City"]
+    },
+    {
+      "name": "state",
+      "category": "contact",
+      "reuse_tier": "citizen_known",
+      "variants": ["State"]
+    },
+    {
+      "name": "zip",
+      "category": "contact",
+      "reuse_tier": "citizen_known",
+      "variants": ["ZIP", "ZIP Code", "Postal Code"]
+    },
+    {
+      "name": "phone",
+      "category": "contact",
+      "reuse_tier": "state_of_record",
+      "variants": ["Phone", "Telephone", "Phone Number", "Primary Phone"]
+    },
+    {
+      "name": "email",
+      "category": "contact",
+      "reuse_tier": "state_of_record",
+      "variants": ["Email", "E-mail", "Email Address"]
+    },
+    {
+      "name": "business_name",
+      "category": "business",
+      "reuse_tier": "state_of_record",
+      "variants": ["Business Name", "Company Name", "Name of Business"]
+    },
+    {
+      "name": "dba",
+      "category": "business",
+      "reuse_tier": "state_of_record",
+      "variants": ["DBA", "Doing Business As", "Assumed Name"]
+    },
+    {
+      "name": "fei_ein",
+      "category": "business",
+      "reuse_tier": "citizen_known",
+      "variants": ["FEI/EIN", "EIN", "Employer Identification Number"]
+    },
+    {
+      "name": "payment_method",
+      "category": "financial",
+      "reuse_tier": "transactional",
+      "variants": ["Payment Method", "Check / Money Order / Credit Card"]
+    },
+    {
+      "name": "fee_amount",
+      "category": "financial",
+      "reuse_tier": "transactional",
+      "variants": ["Fee", "Application Fee", "Amount Enclosed"]
+    },
+    {
+      "name": "signature",
+      "category": "administrative",
+      "reuse_tier": "transactional",
+      "variants": ["Signature", "Applicant Signature"]
+    },
+    {
+      "name": "application_date",
+      "category": "administrative",
+      "reuse_tier": "transactional",
+      "variants": ["Date", "Application Date", "Date Signed"]
+    },
+    {
+      "name": "notary",
+      "category": "administrative",
+      "reuse_tier": "transactional",
+      "variants": ["Notary", "Notary Public", "Sworn before me"]
+    }
+  ]
+}

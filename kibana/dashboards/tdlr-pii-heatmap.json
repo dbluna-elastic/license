@@ -1,0 +1,80 @@
+{
+  "title": "TDLR — PII Frequency Heatmap",
+  "description": "Redundancy is universal, not localized to one bad program.",
+  "time_range": { "from": "now-90d", "to": "now" },
+  "panels": [
+    {
+      "type": "vis",
+      "id": "metric-name-band",
+      "grid": { "x": 0, "y": 0, "w": 16, "h": 5 },
+      "config": {
+        "title": "",
+        "type": "metric",
+        "data_source": {
+          "type": "esql",
+          "query": "FROM tdlr-forms | STATS `Forms asking legal name` = COUNT(*) WHERE MV_CONTAINS(standard_fields, \"legal_name\")"
+        },
+        "metrics": [{ "type": "primary", "column": "Forms asking legal name" }]
+      }
+    },
+    {
+      "type": "vis",
+      "id": "metric-address-band",
+      "grid": { "x": 16, "y": 0, "w": 16, "h": 5 },
+      "config": {
+        "title": "",
+        "type": "metric",
+        "data_source": {
+          "type": "esql",
+          "query": "FROM tdlr-forms | STATS `Forms asking mailing address` = COUNT(*) WHERE MV_CONTAINS(standard_fields, \"mailing_address\")"
+        },
+        "metrics": [{ "type": "primary", "column": "Forms asking mailing address" }]
+      }
+    },
+    {
+      "type": "vis",
+      "id": "metric-ssn-band",
+      "grid": { "x": 32, "y": 0, "w": 16, "h": 5 },
+      "config": {
+        "title": "",
+        "type": "metric",
+        "data_source": {
+          "type": "esql",
+          "query": "FROM tdlr-forms | STATS `Forms asking SSN` = COUNT(*) WHERE MV_CONTAINS(sensitive_pii_fields, \"ssn\")"
+        },
+        "metrics": [{ "type": "primary", "column": "Forms asking SSN" }]
+      }
+    },
+    {
+      "type": "vis",
+      "id": "heatmap-main",
+      "grid": { "x": 0, "y": 5, "w": 48, "h": 16 },
+      "config": {
+        "title": "Canonical standard fields × program sector (distinct forms)",
+        "type": "heatmap",
+        "data_source": {
+          "type": "esql",
+          "query": "FROM tdlr-forms | MV_EXPAND standard_fields | STATS form_count = COUNT_DISTINCT(form_id) BY standard_fields, program_sector"
+        },
+        "x": { "column": "program_sector" },
+        "y": { "column": "standard_fields" },
+        "metric": { "column": "form_count" }
+      }
+    },
+    {
+      "type": "vis",
+      "id": "table-field-freq",
+      "grid": { "x": 0, "y": 21, "w": 48, "h": 10 },
+      "config": {
+        "title": "Field frequency across all forms",
+        "type": "data_table",
+        "data_source": {
+          "type": "esql",
+          "query": "FROM tdlr-forms | MV_EXPAND standard_fields | STATS form_count = COUNT_DISTINCT(form_id) BY standard_fields | SORT form_count DESC | LIMIT 25"
+        },
+        "rows": [{ "column": "standard_fields" }],
+        "metrics": [{ "column": "form_count" }]
+      }
+    }
+  ]
+}
